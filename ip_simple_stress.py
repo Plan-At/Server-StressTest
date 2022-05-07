@@ -2,12 +2,16 @@ from http.client import RemoteDisconnected
 import requests
 from datetime import datetime
 
-TARGET_URL = "https://api-0.752628.xyz/ip"
+TARGET_URL = "https://api.752628.xyz/ip"
+REUSE_CLIENT = True
 
+http_client = requests.Session()
 for i in range(100000):
+    start_time = datetime.now()
+    if REUSE_CLIENT:
+        http_client = http_client
     try:
-        start_time = datetime.now()
-        response = requests.get(TARGET_URL)
-        print(i, str(datetime.now() - start_time), response.status_code, response.text)
+        response = http_client.get(TARGET_URL)
+        print(i, f"{(datetime.now() - start_time).microseconds / 1000}ms", response.status_code, response.text)
     except RemoteDisconnected as e:
-        print(i, str(datetime.now() - start_time), "FAILED")
+        print(i, f"{(datetime.now() - start_time).microseconds / 1000}ms", "FAILED")
